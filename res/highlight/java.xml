@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rules>
+    <rule type="integer">
+        <format color="#0044FF" />
+        <regex><![CDATA[[-+]?\b\d+\b]]></regex>
+    </rule>
+    <rule type="keyword">
+        <format color="#0054A6" bold="" />
+        <regex><![CDATA[\b(false|synchronized|int|abstract|float|private|char|boolean|static|null|if|const|for|true|while|long|strictfp|finally|protected|import|native|final|void|enum|else|break|transient|catch|instanceof|byte|super|volatile|case|assert|short|package|default|double|public|try|this|switch|continue|throws|protected|public|private)\b]]></regex>
+    </rule>
+    <rule type="Annotation">
+        <format bold="" color="#00AEEF" />
+        <regex><![CDATA[@[A-Za-z]+]]></regex>
+    </rule>
+    <rule type="string">
+        <format color="#92278F" />
+        <regex><![CDATA[\"(?:[^\\"]|\.)*\"]]></regex>
+    </rule>
+</rules>

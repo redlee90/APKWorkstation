@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/res/highlight">
+        <file>smali.xml</file>
+        <file>java.xml</file>
+    </qresource>
+</RCC>
