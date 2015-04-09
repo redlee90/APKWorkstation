@@ -30,7 +30,7 @@
 #include "projects.h"
 #include "statusbar.h"
 #include "toolbar.h"
-#include "../dialog/find.h"
+#include "findwidget.h"
 #include "../dialog/project.h"
 #include "../dialog/settings.h"
 #include "../runtime/decompile.h"
@@ -41,8 +41,6 @@
 #include "../runtime/recompile.h"
 #include "../utility/resource.h"
 
-
-
 namespace UI {
 
 class IDE : public QMainWindow
@@ -52,9 +50,8 @@ private:
     Dialog::Project* project;
     // Clipbard
     QClipboard *_clipboard;
-    // Dialog
-    Dialog::Find *_find;
-    Dialog::Find *_replace;
+    // Find Widget
+    findWidget* _findWidget;
     // Event
     void closeEvent(QCloseEvent *);
     // Function
@@ -96,7 +93,6 @@ private slots:
     void __clipboard(const QClipboard::Mode & = QClipboard::Selection);
     void __closed(const QString &);
     void __cutable(const bool);
-    //void __decompile(const QString &, const QString &);
     void __deleted(const QString &);
     void __edit(const QString &);
     void __editorSmali(const int);
@@ -120,10 +116,15 @@ public slots:
     void __showStatusInfo(const QString &, const QString &);
     void __showDex2JarStatusInfo(const QString &, const QString &);
     void __showShowJavaStatusInfo(const QString &);
+    void __showAndHideSearch(const bool checked) {
+        if (checked) {
+            this->_findWidget->show();
+        } else {
+            this->_findWidget->hide();
+        }
+    }
 };
 
 } // namespace UI
-
-
 
 #endif // VPZ_APKSTUDIO_UI_IDE_H

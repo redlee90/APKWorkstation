@@ -1,6 +1,5 @@
 #include "ide.h"
-
-
+#include <QVBoxLayout>
 
 namespace UI {
 
@@ -8,9 +7,6 @@ IDE::IDE(QWidget *parent)
     : QMainWindow(parent)
 {
     this->_clipboard = QApplication::clipboard();
-    // Dialog
-    this->_find = NULL;
-    this->_replace = NULL;
     // Menubar
     this->_menubar = new Menubar(this);
     this->_projects = new Projects;
@@ -22,12 +18,29 @@ IDE::IDE(QWidget *parent)
     this->_mainHorizontal = new QSplitter(Qt::Horizontal, this);
     this->_leftVertical = new QSplitter(Qt::Vertical,this->_mainHorizontal);
     this->_rightVertical = new QSplitter(Qt::Vertical,this->_mainHorizontal);
+    this->_editorHorizontal = new QSplitter(Qt::Horizontal,this->_rightVertical);
+
     this->_mainHorizontal->addWidget(this->_leftVertical);
     this->_mainHorizontal->addWidget(this->_rightVertical);
     this->_leftVertical->addWidget(this->_projects);
-    this->_editorHorizontal = new QSplitter(Qt::Horizontal,this->_rightVertical);
-    this->_rightVertical->addWidget(this->_editorHorizontal);
+
+    QVBoxLayout* _layout = new QVBoxLayout;
+    _layout->setSpacing(0);
+    _layout->setContentsMargins(0,0,0,0);
+    QWidget* _holder = new QWidget(this->_rightVertical);
+    this->_editorHorizontal->setContentsMargins(0,0,0,0);
+    _layout->addWidget(this->_editorHorizontal);
+    _findWidget = new findWidget(this);
+    _findWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
+    _findWidget->setContentsMargins(0,0,0,0);
+    _layout->addWidget(_findWidget);
+    _holder->setLayout(_layout);
+    this->_rightVertical->addWidget(_holder);
     this->_rightVertical->addWidget(this->_console);
+
+    this->_editorHorizontal->setContentsMargins(0,0,0,0);
+    this->_editorSmali->setContentsMargins(0,0,0,0);
+    this->_editorJava->setContentsMargins(0,0,0,0);
     this->_editorHorizontal->addWidget(this->_editorSmali);
     this->_editorHorizontal->addWidget(this->_editorJava);
     // Statusbar
@@ -61,6 +74,8 @@ IDE::IDE(QWidget *parent)
     this->connect(this->_projects, SIGNAL(selected(const bool)), this, SLOT(__projects(const bool)));
     // Toolbar
     this->connect(this->_toolbar, SIGNAL(action(const int)), this, SLOT(__action(const int)));
+    // Editor for samli toolbar
+    this->connect(this->_editorSmali,SIGNAL(findAndReplace(const bool)),this,SLOT(__showAndHideSearch(const bool)));
     // Statusbar
     this->connect(this->_statusbar, SIGNAL(toggled(const int, const bool)), this, SLOT(__toggle(const int, const bool)));
 
@@ -80,6 +95,7 @@ IDE::IDE(QWidget *parent)
     // Window
     this->setCentralWidget(this->_mainHorizontal);
     this->context();
+    this->_findWidget->hide();
 }
 
 void IDE::closeEvent(QCloseEvent *event)
@@ -278,18 +294,6 @@ void IDE::__action(const int action)
             this->open(info.absoluteFilePath());
         break;
     }
-    case UI::Menubar::FIND:
-    {
-        Coder *coder = this->_editorSmali->coder();
-        if (!coder || (coder == 0))
-            break;
-        if (this->_find)
-            delete this->_find;
-        this->_find = new Dialog::Find(false, this);
-        this->_find->editor(coder);
-        this->_find->show();
-        break;
-    }
     case UI::Menubar::GOTO:
     {
         Coder *coder = this->_editorSmali->coder();
@@ -307,7 +311,6 @@ void IDE::__action(const int action)
         this->_editorSmali->paste();
         break;
     case UI::Menubar::PRINT:
-    //case UI::Toolbar::PRINT:
     {
         Coder *coder = this->_editorSmali->coder();
         if (!coder || (coder == 0))
@@ -331,18 +334,6 @@ void IDE::__action(const int action)
     case UI::Menubar::UNDO:
         this->_editorSmali->undo();
         break;
-    case UI::Menubar::REPLACE:
-    {
-        Coder *coder = this->_editorSmali->coder();
-        if (!coder || (coder == 0))
-            break;
-        if (this->_replace != 0)
-            delete this->_replace;
-        this->_replace = new Dialog::Find(true, this);
-        this->_replace->editor(coder);
-        this->_replace->show();
-        break;
-    }
     case UI::Menubar::QUIT:
         this->close();
         break;
@@ -395,10 +386,9 @@ void IDE::__changed()
     Coder *coder = this->_editorSmali->coder();
     if (!coder || (coder == 0))
         return;
-    if (this->_find && (this->_find != NULL))
-        this->_find->editor(coder);
-    if (this->_replace && (this->_replace!= NULL))
-        this->_replace->editor(coder);
+    if (this->_findWidget && (this->_findWidget)!=NULL) {
+        this->_findWidget->editor(coder);
+    }
 }
 
 void IDE::__clipboard(const QClipboard::Mode &mode)
@@ -448,22 +438,18 @@ void IDE::__edit(const QString &path)
 void IDE::__editorSmali(const int count)
 {
     this->_menubar->disable(Menubar::CLOSE, true);
-    this->_menubar->disable(Menubar::FIND, true);
     this->_menubar->disable(Menubar::GOTO, true);
     this->_menubar->disable(Menubar::PASTE, true);
     this->_menubar->disable(Menubar::PRINT, true);
-    this->_menubar->disable(Menubar::REPLACE, true);
     this->_menubar->disable(Menubar::SAVE, true);
     this->_menubar->disable(Menubar::SAVE_ALL, true);
     this->_toolbar->disable(Toolbar::PRINT, true);
     if (count > 0) {
         this->_menubar->enable(Menubar::CLOSE, true);
-        this->_menubar->enable(Menubar::FIND, true);
         this->_menubar->enable(Menubar::GOTO, true);
         if (this->_clipboard->ownsClipboard())
             this->_menubar->enable(Menubar::PASTE, true);
         this->_menubar->enable(Menubar::PRINT, true);
-        this->_menubar->enable(Menubar::REPLACE, true);
         this->_menubar->enable(Menubar::SAVE, true);
         this->_menubar->enable(Menubar::SAVE_ALL, true);
     } else {
@@ -688,6 +674,17 @@ void IDE::__toggle(const int action, const bool checked)
         this->_rightVertical->setSizes(sizes);
         this->_menubar->toggle(Menubar::TOGGLE_CONSOLE_VIEW, checked, true);
         this->_statusbar->toggle(Statusbar::TOGGLE_CONSOLE_VIEW, checked, true);
+        break;
+    }
+    case UI::Menubar::FIND_AND_REPLACE:
+    {
+        if (checked) {
+            this->_findWidget->show();
+            this->_editorSmali->_find->setChecked(true);
+        } else {
+            this->_findWidget->hide();
+            this->_editorSmali->_find->setChecked(false);
+        }
         break;
     }
     default:

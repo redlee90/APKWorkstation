@@ -10,18 +10,15 @@ Menubar::Menubar(QWidget *parent) :
     /*
      * @Initialize
      */
-    // About
-    this->_about = new QAction(text("label_about"), this);
     // Edit
     QMenu *edit = new QMenu(text("label_edit"), this);
     this->_copy = new QAction(icon("copy"), text("label_copy"), edit);
     this->_cut = new QAction(icon("cut"), text("label_cut"), edit);
-    this->_find = new QAction(icon("find"), text("label_find"), edit);
     this->_goto = new QAction(icon("goto"), text("label_goto"), edit);
     this->_paste = new QAction(icon("paste"), text("label_paste"), edit);
     this->_redo = new QAction(icon("redo"), text("label_redo"), edit);
-    this->_replace = new QAction(icon("replace"), text("label_replace"), edit);
     this->_undo = new QAction(icon("undo"), text("label_undo"), edit);
+    this->_findAndReplace = new QAction(icon("find"),tr("Find/Replace"),edit);
     // File
     QMenu *file = new QMenu(text("label_file"), this);
     this->_apk = new QAction(icon("apk"), text("label_apk"), file);
@@ -48,12 +45,15 @@ Menubar::Menubar(QWidget *parent) :
     // Edit
     this->_copy->setShortcut(Qt::CTRL | Qt::Key_C);
     this->_cut->setShortcut(Qt::CTRL | Qt::Key_X);
-    this->_find->setShortcut(Qt::CTRL | Qt::Key_F);
     this->_goto->setShortcut(Qt::CTRL | Qt::Key_G);
     this->_paste->setShortcut(Qt::CTRL | Qt::Key_V);
     this->_redo->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_Z);
-    this->_replace->setShortcut(Qt::CTRL | Qt::Key_H);
     this->_undo->setShortcut(Qt::CTRL | Qt::Key_Z);
+    QList<QKeySequence> findAndReplaceShort;
+    findAndReplaceShort.append(QKeySequence(Qt::CTRL + Qt::Key_F));
+    findAndReplaceShort.append(QKeySequence(Qt::CTRL + Qt::Key_R));
+    this->_findAndReplace->setShortcuts(findAndReplaceShort);
+    this->_findAndReplace->setCheckable(true);
     // File
     this->_apk->setShortcut(Qt::CTRL | Qt::Key_N);
     this->_close->setShortcut(Qt::CTRL | Qt::Key_W);
@@ -78,15 +78,13 @@ Menubar::Menubar(QWidget *parent) :
      * @Bind
      */
     // Edit
-    this->connect(this->_about, SIGNAL(triggered()), this, SLOT(__about()));
     this->connect(this->_copy, SIGNAL(triggered()), this, SLOT(__copy()));
     this->connect(this->_cut, SIGNAL(triggered()), this, SLOT(__cut()));
-    this->connect(this->_find, SIGNAL(triggered()), this, SLOT(__find()));
     this->connect(this->_goto, SIGNAL(triggered()), this, SLOT(__goto()));
     this->connect(this->_paste, SIGNAL(triggered()), this, SLOT(__paste()));
     this->connect(this->_redo, SIGNAL(triggered()), this, SLOT(__redo()));
-    this->connect(this->_replace, SIGNAL(triggered()), this, SLOT(__replace()));
     this->connect(this->_undo, SIGNAL(triggered()), this, SLOT(__undo()));
+    this->connect(this->_findAndReplace,SIGNAL(toggled(const bool)),this,SLOT(__toggle_find_edit(bool)));
     // File
     this->connect(this->_apk, SIGNAL(triggered()), this, SLOT(__apk()));
     this->connect(this->_close, SIGNAL(triggered()), this, SLOT(__close()));
@@ -119,9 +117,9 @@ Menubar::Menubar(QWidget *parent) :
     edit->addAction(this->_copy);
     edit->addAction(this->_paste);
     edit->addSeparator();
-    edit->addAction(this->_find);
-    edit->addAction(this->_replace);
     edit->addAction(this->_goto);
+    this->_findAndReplace->setChecked(false);
+    edit->addAction(this->_findAndReplace);
     // File
     file->addAction(this->_apk);
     file->addAction(this->_directory);
@@ -152,8 +150,6 @@ Menubar::Menubar(QWidget *parent) :
     this->addAction(edit->menuAction());
     this->addAction(project->menuAction());
     this->addAction(view->menuAction());
-    // About
-    this->addAction(this->_about);
 }
 
 void Menubar::disable(const int action, const bool block)
@@ -184,24 +180,20 @@ QAction *Menubar::get(const int action)
 {
     switch (action)
     {
-    case ABOUT:
-        return this->_about;
     case COPY:
         return this->_copy;
     case CUT:
         return this->_cut;
-    case FIND:
-        return this->_find;
     case GOTO:
         return this->_goto;
     case PASTE:
         return this->_paste;
     case REDO:
         return this->_redo;
-    case REPLACE:
-        return this->_replace;
     case UNDO:
         return this->_undo;
+    case FIND_AND_REPLACE:
+        return this->_findAndReplace;
     case APK:
         return this->_apk;
     case CLOSE:
@@ -242,7 +234,6 @@ void Menubar::reset()
     this->_close->setEnabled(false);
     this->_copy->setEnabled(false);
     this->_cut->setEnabled(false);
-    this->_find->setEnabled(false);
     this->_goto->setEnabled(false);
     this->_sidebar->setChecked(false);
     this->_toggle_console_view->setChecked(false);
@@ -251,10 +242,10 @@ void Menubar::reset()
     this->_print->setEnabled(false);
     this->_properties->setEnabled(false);
     this->_redo->setEnabled(false);
-    this->_replace->setEnabled(false);
     this->_save->setEnabled(false);
     this->_save_all->setEnabled(false);
     this->_undo->setEnabled(false);
+    this->_findAndReplace->setChecked(false);
 }
 
 void Menubar::toggle(const int action, const bool check, const bool block)

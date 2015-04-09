@@ -23,9 +23,6 @@
 #include "coder.h"
 #include "../bridge/constant.h"
 #include "../utility/resource.h"
-#include "../dialog/find.h"
-
-
 
 namespace UI {
 
@@ -34,11 +31,9 @@ class Editors : public QWidget
     Q_OBJECT
 private:
     // Action
-    Dialog::Find *_findDialog;
     QAction *_revert;
     QAction *_save;
     QAction *_save_all; 
-    QAction *_find;
     // Combo
     QComboBox *_combo;
     // Function
@@ -63,6 +58,7 @@ private:
 public:
     QAction *_undo;
     QAction *_redo;
+     QAction *_find;
     // Constructor
     Editors(QWidget * = 0);
     // Function
@@ -128,7 +124,6 @@ public:
         if (coder)
             coder->undo();
     }
-    void find();
 signals:
     void changed();
     void cutable(const bool);
@@ -137,6 +132,7 @@ signals:
     void progress(const int);
     void redoable(const bool);
     void undoable(const bool);
+    void findAndReplace(const bool);
 private slots:
     // Index
     void __changed(const int);
@@ -164,8 +160,8 @@ private slots:
     void __undo() {
         this->undo();
     }
-    void __find() {
-        this->find();
+    void __findAndReplace(const bool checked) {
+        emit findAndReplace(checked);
     }
 
     // Menubar

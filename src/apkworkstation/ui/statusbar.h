@@ -16,8 +16,6 @@
 
 #include "../utility/resource.h"
 
-
-
 namespace UI {
 
 class Statusbar : public QToolBar

@@ -24,7 +24,6 @@ SOURCES += \
     src/apkworkstation/runtime/decompile.cpp \
     src/apkworkstation/runtime/recompile.cpp \
     src/apkworkstation/runtime/framework.cpp \
-    src/apkworkstation/dialog/find.cpp \
     src/apkworkstation/runtime/build.cpp \
     src/apkworkstation/utility/text.cpp \
     src/apkworkstation/dialog/add.cpp \
@@ -34,7 +33,8 @@ SOURCES += \
     src/apkworkstation/runtime/dex2jar.cpp \
     src/apkworkstation/runtime/showjava.cpp \
     src/apkworkstation/ui/editorsmali.cpp \
-    src/apkworkstation/ui/editorjava.cpp
+    src/apkworkstation/ui/editorjava.cpp \
+    src/apkworkstation/ui/findwidget.cpp
 
 HEADERS += \
     src/apkworkstation/bridge/constant.h \
@@ -57,7 +57,6 @@ HEADERS += \
     src/apkworkstation/runtime/decompile.h \
     src/apkworkstation/runtime/recompile.h \
     src/apkworkstation/runtime/framework.h \
-    src/apkworkstation/dialog/find.h \
     src/apkworkstation/runtime/build.h \
     src/apkworkstation/utility/text.h \
     src/apkworkstation/dialog/add.h \
@@ -67,7 +66,8 @@ HEADERS += \
     src/apkworkstation/runtime/dex2jar.h \
     src/apkworkstation/runtime/showjava.h \
     src/apkworkstation/ui/editorsmali.h \
-    src/apkworkstation/ui/editorjava.h
+    src/apkworkstation/ui/editorjava.h \
+    src/apkworkstation/ui/findwidget.h
 
 RESOURCES += \
     res/language/language.qrc \

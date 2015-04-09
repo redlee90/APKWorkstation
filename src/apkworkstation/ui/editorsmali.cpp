@@ -1,7 +1,5 @@
 #include "editorsmali.h"
 
-
-
 namespace UI {
 
 Editors::Editors(QWidget *parent) :
@@ -13,11 +11,12 @@ Editors::Editors(QWidget *parent) :
     this->_revert = new QAction(icon("revert"), text("label_revert"), this->_toolbar);
     this->_save = new QAction(icon("save"), text("label_save"), this->_toolbar);
     this->_save_all = new QAction(icon("save_all"), tr("Save All"),this->_toolbar);
-    this->_undo = new QAction(icon("undo"),tr("undo"),this->_toolbar);
-    this->_redo = new QAction(icon("redo"),tr("redo"),this->_toolbar);
-    this->_find = new QAction(icon("find"),tr("find"),this->_toolbar);
+    this->_undo = new QAction(icon("undo"),tr("Undo"),this->_toolbar);
+    this->_redo = new QAction(icon("redo"),tr("Redo"),this->_toolbar);
+    this->_find = new QAction(icon("find"),tr("Find/Replace"),this->_toolbar);
     // Combo
     this->_combo = new QComboBox(this->_toolbar);
+    this->_combo->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
     // Layout
     QVBoxLayout *layout = new QVBoxLayout(this);
     // List
@@ -45,15 +44,12 @@ Editors::Editors(QWidget *parent) :
     this->connect(this->_save_all,SIGNAL(triggered()),this,SLOT(__save_all()));
     this->connect(this->_redo,SIGNAL(triggered()),this,SLOT(__redo()));
     this->connect(this->_undo,SIGNAL(triggered()),this,SLOT(__undo()));
-    this->connect(this->_find,SIGNAL(triggered()),this,SLOT(__find()));
+    this->connect(this->_find,SIGNAL(toggled(const bool)),this,SLOT(__findAndReplace(const bool)));
     // List
     this->connect(this->_combo, SIGNAL(currentIndexChanged(const int)), this, SLOT(__changed(const int)));
     // Tabs
     this->connect(this->_tabs, SIGNAL(tabCloseRequested(const int)), this, SLOT(__close(int)));
     this->connect(this->_tabs, SIGNAL(currentChanged(const int)), this, SLOT(__changed(const int)));
-    // Layout
-    layout->addWidget(this->_toolbar);
-    layout->addWidget(this->_tabs);
     // Actions
     QList<QAction *> state;
     state << this->_save;
@@ -65,7 +61,12 @@ Editors::Editors(QWidget *parent) :
     // Toolbar
     this->_toolbar->addActions(state);
     this->_toolbar->addWidget(this->_combo);
-    // Widget
+    // Layout
+    layout->setContentsMargins(0,0,0,0);
+    this->_toolbar->setContentsMargins(0,0,0,0);
+    this->_tabs->setContentsMargins(0,0,0,0);
+    layout->addWidget(this->_toolbar);
+    layout->addWidget(this->_tabs);
     this->setLayout(layout);
 }
 
@@ -179,7 +180,8 @@ void Editors::reset()
     this->_save_all->setEnabled(false);
     this->_redo->setEnabled(false);
     this->_undo->setEnabled(false);
-    this->_find->setEnabled(false);
+    this->_find->setCheckable(true);
+    this->_find->setChecked(false);
     // Current
     int index = this->_tabs->currentIndex();
     // Close
@@ -187,7 +189,7 @@ void Editors::reset()
         this->_revert->setEnabled(true);
         this->_save->setEnabled(true);
         this->_save_all->setEnabled(true);
-        this->_find->setEnabled(true);
+        this->_find->setChecked(true);
         Coder *coder = this->coder();
         if (coder) {
             if (coder->document()->availableRedoSteps() < 1)
@@ -248,16 +250,16 @@ void Editors::__revert()
     }
 }
 
-void Editors::find() {
-    Coder *coder = this->coder();
-    if (!coder || (coder == 0))
-        return;
-    if (this->_findDialog)
-        delete this->_findDialog;
-    this->_findDialog = new Dialog::Find(false, this);
-    this->_findDialog->editor(coder);
-    this->_findDialog->show();
-}
+// void Editors::__find() {
+//    Coder *coder = this->coder();
+//    if (!coder || (coder == 0))
+//        return;
+//    if (this->_findDialog)
+//        delete this->_findDialog;
+//    this->_findDialog = new Dialog::Find(false, this);
+//    this->_findDialog->editor(coder);
+//    this->_findDialog->show();
+// }
 
 } // namespace UI
 

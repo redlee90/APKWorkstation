@@ -32,6 +32,7 @@
         <file>find/find.png</file>
         <file>find/replace.png</file>
         <file>framework/window.png</file>
+        <file>javaviewer/search.png</file>
         <file>logcat/clear.png</file>
         <file>logcat/copy.png</file>
         <file>logcat/debug.png</file>

@@ -83,6 +83,9 @@ Projects::Projects(QWidget *parent) :
      * @Inflate
      */
     // Layout
+    layout->setContentsMargins(0,0,0,0);
+    this->_toolbar->setContentsMargins(0,0,0,0);
+    this->_tree->setContentsMargins(0,0,0,0);
     layout->addWidget(this->_toolbar);
     layout->addWidget(this->_tree);
     // Menu

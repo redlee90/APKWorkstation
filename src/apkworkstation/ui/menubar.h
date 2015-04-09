@@ -11,25 +11,20 @@
 
 #include "../utility/resource.h"
 
-
-
 namespace UI {
 
 class Menubar : public QMenuBar
 {
     Q_OBJECT
 private:
-    // About
-    QAction * _about;
     // Edit
     QAction * _copy;
     QAction * _cut;
-    QAction * _find;
     QAction * _goto;
     QAction * _paste;
     QAction * _redo;
-    QAction * _replace;
     QAction * _undo;
+    QAction *_findAndReplace;
     // File
     QAction * _apk;
     QAction * _close;
@@ -57,11 +52,6 @@ private:
         return Utility::Resource::text("menubar", key);
     }
 private slots:
-    // About
-    void __about()
-    {
-        emit action(ABOUT);
-    }
     // Edit
     void __copy()
     {
@@ -70,10 +60,6 @@ private slots:
     void __cut()
     {
         emit action(CUT);
-    }
-    void __find()
-    {
-        emit action(FIND);
     }
     void __goto()
     {
@@ -86,10 +72,6 @@ private slots:
     void __redo()
     {
         emit action(REDO);
-    }
-    void __replace()
-    {
-        emit action(REPLACE);
     }
     void __undo()
     {
@@ -152,16 +134,17 @@ private slots:
     void __toggle_java_view(bool checked) {
         emit toggled(TOGGLE_JAVA_VIEW,checked);
     }
+    void __toggle_find_edit(bool checked) {
+        emit toggled(FIND_AND_REPLACE,checked);
+    }
 
 public:
     enum Action {
-        ABOUT = 1,
-        BUILD,
+        BUILD=1,
         CLEAN,
         CLOSE,
         COPY,
         CUT,
-        FIND,
         GOTO,
         INSTALL,
         SIDEBAR,
@@ -173,7 +156,7 @@ public:
         PRINT,
         PROPERTIES,
         REDO,
-        REPLACE,
+        FIND_AND_REPLACE,
         QUIT,
         SAVE,
         SAVE_ALL,

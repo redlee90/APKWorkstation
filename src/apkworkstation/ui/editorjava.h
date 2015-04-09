@@ -5,12 +5,11 @@
 #include <QString>
 #include <QTabWidget>
 #include <QToolBar>
+#include <QLabel>
+#include <QLineEdit>
 #include <QComboBox>
 #include <QList>
 #include "coder.h"
-#include "../dialog/find.h"
-
-
 
 namespace UI {
 
@@ -24,14 +23,16 @@ public:
 
 private:
     QToolBar *_toolbar;
+    QLabel* _searchLabel;
+    QLineEdit* _searchText;
+    QTextCursor _cursor;
     QComboBox *_comboBox;
     QList<QString>* _list;
-    QAction* _find;
-    Dialog::Find* _findDialog;
+    QAction* _search;
 
 public slots:
     void __changed(const int index);
-    void find();
+    void search();
 };
 
 }
