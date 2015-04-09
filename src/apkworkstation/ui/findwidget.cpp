@@ -28,7 +28,7 @@ findWidget::findWidget(QWidget *parent) :
     this->_replaceLabel->setText("Replace with:");
     this->_replaceText = new QLineEdit(this->_replaceToolBar);
     this->_replaceButton = new QPushButton(tr("Replace"),this->_replaceToolBar);
-    this->_replaceAllButton = new QPushButton(tr("Replace All"),this->_replaceAllButton);
+    this->_replaceAllButton = new QPushButton(tr("Replace All"),this->_replaceToolBar);
     this->_replaceToolBar->addWidget(this->_replaceLabel);
     this->_replaceToolBar->addWidget(this->_replaceText);
     this->_replaceToolBar->addWidget(this->_replaceButton);
