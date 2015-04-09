@@ -14,6 +14,7 @@ Coder::Coder(QWidget *parent) :
     this->setFont(font);
     // Menu
     this->_menu = new QMenu(this);
+    //this->_menu = new QMenu;
     // Action
     this->_close = new QAction(icon("close"), text("label_close"), this);
     this->_copy = new QAction(icon("copy"), text("label_copy"), this);

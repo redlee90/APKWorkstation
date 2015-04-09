@@ -1,7 +1,5 @@
 #include "projects.h"
 
-
-
 namespace UI {
 
 Projects::Projects(QWidget *parent) :
@@ -30,8 +28,11 @@ Projects::Projects(QWidget *parent) :
     this->_rename_ = new QAction(icon("rename"), text("label_rename"), this->_toolbar);
 #ifdef Q_OS_WIN
     this->_show = new QAction(icon("show"), text("label_show_windows"), this->_menu);
+#endif
+#ifdef Q_OS_MAC
+    this->_show = new QAction(icon("show"), tr("open in Finder"), this->_menu);
 #else
-    this->_show = new QAction(icon("show"), text("label_show_linux"), this->_menu);
+    this->_show = new QAction(icon("show"),text("label_show_linux"),this->_menu);
 #endif
     // Layout
     QVBoxLayout *layout = new QVBoxLayout(this);
@@ -400,7 +401,20 @@ void Projects::__properties()
     ShellExecuteInfo.lpIDList = 0;
     ShellExecuteEx(&ShellExecuteInfo);
     Sleep(5);
-#else
+#endif
+#ifdef Q_OS_MAC
+    QProcess *process = new QProcess(this);
+    QStringList arguments;
+    QString command;
+    command.append("/usr/bin/osascript");
+    QString aScript;
+    aScript.append("set macpath to POSIX file \"");
+    aScript.append(path).append("\" as alias\n").append("tell application \"Finder\"to open information window of macpath");
+    arguments << QString("-l");
+    arguments << QString("AppleScript");
+    process->start(command,arguments);
+    process->write(aScript.toUtf8());
+    process->closeWriteChannel();
 #endif
 }
 
@@ -511,6 +525,9 @@ void Projects::__show()
         param = QString("/select,");
     param += QDir::toNativeSeparators(path);
     QProcess::startDetached("explorer", QStringList(param));
+#endif
+#ifdef Q_OS_MAC
+    QProcess::startDetached("open", QStringList(path));
 #else
     QProcess::startDetached("nautilus", QStringList(path));
 #endif

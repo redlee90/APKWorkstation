@@ -1,7 +1,5 @@
 #include "toolbar.h"
 
-
-
 namespace UI {
 
 Toolbar::Toolbar(QWidget *parent) :
