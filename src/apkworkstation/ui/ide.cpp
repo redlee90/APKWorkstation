@@ -290,8 +290,12 @@ void IDE::__action(const int action)
         if (path.isNull() || path.isEmpty())
             break;
         QFileInfo info(path);
-        if (info.exists() && info.isFile())
+        if (info.exists() && info.isFile()) {
             this->open(info.absoluteFilePath());
+            //this->project->setLocation(info.absolutePath());
+            //this->_toolbar->_showjava->setEnabled(true);
+            //this->_toolbar->_dex2jar->setEnabled(true);
+        }
         break;
     }
     case UI::Menubar::GOTO:

@@ -19,7 +19,7 @@ done
 }
 
 function main() {
-	unzip "$1"/base.jar -d "$1"/java >/dev/null 2>&1
+	unzip -o "$1"/base.jar -d "$1"/java >/dev/null 2>&1
 	if [ -d "$1"/java ]; then
 		traverse "$1"/java/
 	fi

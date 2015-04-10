@@ -102,6 +102,10 @@ public:
     {
         return this->_location->text();
     }
+    void setLocation(const QString& location) {
+        this->_location->setText(location);
+    }
+
     QString name()
     {
         return this->_name->text();
