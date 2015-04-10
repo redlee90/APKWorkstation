@@ -403,7 +403,10 @@ void Projects::__properties()
     Sleep(5);
 #endif
 #ifdef Q_OS_MAC
-    QProcess *process = new QProcess(this);
+    if (processInfo) {
+        delete processInfo;
+    }
+    processInfo = new QProcess(this);
     QStringList arguments;
     QString command;
     command.append("/usr/bin/osascript");
@@ -412,9 +415,9 @@ void Projects::__properties()
     aScript.append(path).append("\" as alias\n").append("tell application \"Finder\"to open information window of macpath");
     arguments << QString("-l");
     arguments << QString("AppleScript");
-    process->start(command,arguments);
-    process->write(aScript.toUtf8());
-    process->closeWriteChannel();
+    processInfo->start(command,arguments);
+    processInfo->write(aScript.toUtf8());
+    processInfo->closeWriteChannel();
 #endif
 }
 

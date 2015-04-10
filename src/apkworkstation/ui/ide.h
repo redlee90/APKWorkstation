@@ -47,6 +47,7 @@ class IDE : public QMainWindow
 {
     Q_OBJECT
 private:
+    QProcess *processShell;
     Dialog::Project* project;
     // Clipbard
     QClipboard *_clipboard;

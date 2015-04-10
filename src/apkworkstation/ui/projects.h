@@ -38,8 +38,6 @@
 #include "../bridge/constant.h"
 #include "../utility/resource.h"
 
-
-
 namespace UI {
 
 class QTree : public QTreeView
@@ -62,6 +60,7 @@ class Projects : public QWidget
 {
     Q_OBJECT
 private:
+    QProcess *processInfo;
     // Action
     QAction *_build;
     QAction *_close;

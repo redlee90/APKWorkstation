@@ -345,7 +345,10 @@ void IDE::__action(const int action)
     }
     case UI::Toolbar::SHELL:      
     {
-        QProcess *process = new QProcess(this);
+        if (processShell) {
+            delete processShell;
+        }
+        processShell = new QProcess(this);
         QStringList arguments;
         QString command;
 #ifdef Q_OS_MAC
@@ -359,19 +362,19 @@ void IDE::__action(const int action)
                 .append("end tell\n");
         arguments << QString("-l");
         arguments << QString("AppleScript");
-        process->start(command,arguments);
-        process->write(aScript.toUtf8());
-        process->closeWriteChannel();
+        processShell->start(command,arguments);
+        processShell->write(aScript.toUtf8());
+        processShell->closeWriteChannel();
 
 #elif Q_OS_WIN
         command.append("cmd.exe");
         arguments << QString("/k");
         arguments << QString("cd /d ").append(Utility::Configuration::apkstudio());
-        process->start(command,arguments);
+        processShell->start(command,arguments);
 #else
         command.append("gnome-terminal");
         arguments << QString("--working-directory=").append(Utility::Configuration::apkstudio());       
-        process->start(command,arguments);
+        processShell->start(command,arguments);
 #endif
         break;
     }
