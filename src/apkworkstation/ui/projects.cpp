@@ -57,7 +57,11 @@ Projects::Projects(QWidget *parent) :
     this->_tree->setSelectionBehavior(QAbstractItemView::SelectItems);
     this->_tree->setSelectionMode(QAbstractItemView::SingleSelection);
     this->_tree->setSortingEnabled(false);
-    //this->_tree->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    this->_tree->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    this->_tree->header()->setMinimumSectionSize(this->geometry().width());
+    this->_tree->header()->setDefaultSectionSize(this->geometry().width());
+    this->_tree->header()->setStretchLastSection(false);
+
     // Widget
     this->setMinimumSize(QSize(160, 160));
     /*
