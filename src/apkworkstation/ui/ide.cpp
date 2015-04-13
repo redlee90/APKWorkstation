@@ -237,10 +237,10 @@ void IDE::__action(const int action)
         Runtime::showjava *show_java = new Runtime::showjava(location);
         // Bind
         this->connect(show_java, SIGNAL(output(const QString &)), this, SLOT(__output(const QString &)));
-        this->connect(show_java, SIGNAL(newStatusInfo(const QString &, const QString &)), this, SLOT(__showShowJavaStatusInfo(const QString &)));
+        this->connect(show_java, SIGNAL(newStatusInfo(const QString &, const int)), this, SLOT(__showShowJavaStatusInfo(const QString &, const int)));
         this->connect(show_java,SIGNAL(newConsoleInfo(const QString &)),this,SLOT(__showConsoleInfo(const QString &)));
         // Execute
-        show_java->start();
+        show_java->run();
         // Status
         this->_statusbar->progress(-1);
         this->_statusbar->message(tr("Converting base.jar to java"));
@@ -292,9 +292,6 @@ void IDE::__action(const int action)
         QFileInfo info(path);
         if (info.exists() && info.isFile()) {
             this->open(info.absoluteFilePath());
-            //this->project->setLocation(info.absolutePath());
-            //this->_toolbar->_showjava->setEnabled(true);
-            //this->_toolbar->_dex2jar->setEnabled(true);
         }
         break;
     }
@@ -529,18 +526,16 @@ void IDE::__showDex2JarStatusInfo(const QString& apk, const QString& jar) {
     QString out=apk;
     out = out.append("successfully converted to ").append(jar);
     this->_statusbar->message(out);
+    this->_projects->refresh(jar,true);
 }
 
-void IDE::__showShowJavaStatusInfo(const QString& java)
+void IDE::__showShowJavaStatusInfo(const QString& java, const int flag)
 {
-    this->_statusbar->progress(0);
-    if (java.isEmpty()) {
-        this->_statusbar->message(QString("show java failed"));
-        return;
+    if (flag==1) {
+       this->_statusbar->progress(0);
     }
-
-    QString out = QString("successfully converted to java files at ").append(java);
-    this->_statusbar->message(out);
+    this->_statusbar->message(java);
+    this->_projects->refresh(java,true);
 }
 
 void IDE::__message(const QString &text)

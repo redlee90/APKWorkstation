@@ -7,14 +7,14 @@
 #include <QObject>
 #include <QProcess>
 #include <QStringList>
-#include <QThread>
 
 #include "../utility/format.h"
 #include "../utility/configuration.h"
 
 namespace Runtime {
 
-class showjava : public QThread
+class showjava : public QObject
+//class showjava : public QThread
 {
     Q_OBJECT
 public:
@@ -24,11 +24,17 @@ public:
 private:
     bool _done;
     QString _outDir;
+    QProcess* process;
 
 signals:
     void output(const QString &);
     void newConsoleInfo(const QString &);
-    void newStatusInfo(const QString&, const QString &);
+    void newStatusInfo(const QString &, const int);
+
+private slots:
+    void __finished(int);
+    void __readRead();
+
 };
 
 }

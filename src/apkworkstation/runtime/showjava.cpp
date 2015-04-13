@@ -4,6 +4,9 @@ namespace Runtime {
 
 showjava::showjava(const QString& _outDir) {
     this->_outDir = _outDir;
+    process = new QProcess;
+    connect(process,SIGNAL(readyRead()),this,SLOT(__readRead()));
+    connect(process,SIGNAL(finished(int)),this,SLOT(__finished(int)));
 }
 
 void showjava::run() {
@@ -13,27 +16,29 @@ void showjava::run() {
     arguments << this->_outDir;
 
     // Process
-    QProcess process;
-    process.setEnvironment(QProcess::systemEnvironment());
-    process.setProcessChannelMode(QProcess::ForwardedChannels);
+    process->setEnvironment(QProcess::systemEnvironment());
     // Start
-    process.start(QString("sh"), arguments, QIODevice::ReadOnly);
+    process->start(QString("sh"), arguments, QIODevice::ReadOnly);
     // Wait (Start)
-    if (!process.waitForStarted()) {
-        emit newStatusInfo(this->_outDir, QString());
-    }
-    // Wait (Read)
-    process.waitForReadyRead(-1);
-    // Wait (Stop)
-    process.waitForFinished(-1);
-
-    QString jarOutput(process.readAllStandardOutput());
-    emit newConsoleInfo(jarOutput);
-
-    QFileInfo info(this->_outDir.append("/java"));
-    if (info.exists() && info.isDir()) {
-        emit newStatusInfo(info.absoluteFilePath(),info.absoluteFilePath());
+    if (!process->waitForStarted()) {
+        emit newStatusInfo("Decompile java failed",1);
     }
 }
+
+void showjava::__readRead()
+{
+    QString jarOutput(process->readAllStandardOutput());
+    emit newStatusInfo(jarOutput,0);
+}
+
+void showjava::__finished(int flag)
+{
+    //delete process;
+    QFileInfo info(this->_outDir.append("/java"));
+    if (info.exists() && info.isDir()) {
+        emit newStatusInfo(QString("Decompile java successfully to ").append(info.absoluteFilePath()),1);
+    }
+}
+
 }
 

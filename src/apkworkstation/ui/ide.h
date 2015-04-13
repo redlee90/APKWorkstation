@@ -116,7 +116,7 @@ public slots:
     void __showConsoleInfo(const QString &);
     void __showStatusInfo(const QString &, const QString &);
     void __showDex2JarStatusInfo(const QString &, const QString &);
-    void __showShowJavaStatusInfo(const QString &);
+    void __showShowJavaStatusInfo(const QString &, const int);
     void __showAndHideSearch(const bool checked) {
         if (checked) {
             this->_findWidget->show();
